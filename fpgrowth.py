@@ -5,14 +5,17 @@ from optparse import OptionParser
 from fpgrowth_py.utils import *
 from fpgrowth_py import fpgrowth
 
-
-def fpgrowthFromFile(fname, minSupRatio, minConf):
-    itemSetList, frequency = getFromFile(fname)
-
-    freqItemSet, rules = fpgrowth(itemSetList, minSupRatio, minConf)
+def fpgrowthFromFile(fileName, minSupParam, minConf):
+    itemSetList, frequency = getFromFile(fileName)
+    
+    minSup = len(itemSetList) * minSupParam
+    fpTree, headerTable = constructTree(itemSetList, frequency, minSup)
+    freqItems = []
+    mineTree(headerTable, minSup, set(), freqItems)
+    rules = associationRule(freqItems, itemSetList, minConf)
     print(rules)
     print("----------------------")
-    print(freqItemSet)
+    print(freqItems)
 
 
 if __name__ == "__main__":
@@ -35,4 +38,4 @@ if __name__ == "__main__":
 
     (options, args) = optparser.parse_args()
   
-    fpgrowthFromFile(options.inputFile, options.minSup, options.minConf)
+    (fpgrowthFromFile(options.inputFile, options.minSup, options.minConf))
